@@ -29,14 +29,15 @@ var config = {
   
   /// Get Authicated user token
   firebase.auth().getRedirectResult().then(function(result) {
+      
     if (result.credential) {
       // This gives you a Google Access Token. You can use it to access the Google API.
       var token = result.credential.accessToken;
       // ...
     }
     // The signed-in user info.
-    var user = result.user;
-    console.log(user);
+    var user1 = result.user;
+    console.log(user1);
   }).catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;
@@ -126,31 +127,42 @@ var config = {
                 var arrival = moment().add(minutes,"m").format("hh:mm A");
 
                 //append data to the columns to display the schedule created from the submitted data stored on firebase
-                $("#trainRow").append("<tr><td>"+ name+ "</td><td>"+ destination +
-                "</td><td>"+ frequency +"</td><td>"+ arrival+
-                "</td><td>" + minutes + "</td><td>" + 
-                "<i><span class='far fa-edit'data-edit-icon=" + trainId + "></span></i>" +"</td><td>" + 
-                "<i><span class='fas fa-trash' data-trash-icon=" + trainId + "></span></i>" + "</td></tr>"
+                $("#trainRow").append("<tr><td class='row_data'>"+ name+ "</td><td class='row_data'>"+ destination +
+                "</td><td class='row_data'>"+ frequency +"</td><td class='row_data'>"+ arrival+
+                "</td><td class='row_data'>" + minutes + "</td><td>" + 
+                "<i><span class='fas fa-trash' data-trash-icon=" + trainId + "></span></i>" + "</td><td>" +
+                "<i><span class='far fa-edit'data-edit-icon=" + trainId + "></span></i>" +"</td><td>"  +
+                "<i><span class='far fa-save hiddenBtn' data-save-icon=" + trainId + "></span> </i>"  + "</td><td>" +
+                "<i><span class='fas fa-undo hiddenBtn' data-undo-icon=" + trainId + "></span> </i>"  + "</td></tr>"
+              
                 );
+                $(".fa-save").hide();
+                $(".fa-undo").hide();
+
+                //$("span").hide();
 
 
-                $("span").hide();
+
+
 
                 // Hover view of delete or edit button
-                $("tr").hover(
-                    function() {
-                        $(this).find("span").show();
-                    },
-                    function() {
-                        $(this).find("span").hide();
-                    }
-                );
+                // $("tr").hover(
+                //     function() {
+                //         $(this).find("span").show();
+                //     },
+                //     function() {
+                //         $(this).find("span").hide();
+                //     }
+                // );
             
               
                 
             });
     });
 }
+
+
+
 //function to start timer
 function startTimer() {
     timer = setInterval(function() {  
@@ -166,6 +178,7 @@ $( document ).ready(function() {
     
     updateTrainInfo();
     startTimer();
+
 });
 // BONUS to Remove Train
 $("#trainRow").on("click", ".fa-trash", function() {
@@ -180,8 +193,82 @@ $("#trainRow").on("click", ".fa-trash", function() {
 // BONUS to Edit Train Details
 $("#trainRow").on("click", ".fa-edit", function() {
     console.log(this);
+    var tbl_row =$(this).closest('tr');
+
    
+        tbl_row.find(".fa-save").show();
+        tbl_row.find(".fa-undo").show();
+        tbl_row.find(".fa-edit").hide();
+    
+
+    //make div editable
+    $(this).closest('div').attr('contenteditable', 'true');
+   
+    //add bg css
+    $(tbl_row).addClass('bg-dark').css('padding','5px');
+    
+    $(tbl_row).focus();
+});
+//To Save Row records
+$("#trainRow").on("click", ".fa-save", function() {
+  
+    var tbl_row =$(this).closest('tr');
+    var trainId = $(this).attr("data-save-icon")
+   
+    var arr = {}; 
+    var i=0;
+	tbl_row.find('.row_data').each(function(index, val) 
+	{  
+		var col_name = i;  
+		var col_val  =  $(this).html();
+        arr[col_name] = col_val;
+        i=i+1;
+    });
+    console.log(arr[0]);
+
+   
+
+    var newTrain = {
+        name: arr[0],
+        destination: arr[1],
+        firstTrain:  moment(convertTime12to24(arr[3]),"HH:mm").subtract(1,"years").format("X"),
+        frequency: arr[2]
+        }
+console.log(trainId);
+      trainInfo.ref(trainId).set(newTrain);
+
+        console.log(newTrain);
+        tbl_row.find(".fa-save").hide();
+        tbl_row.find(".fa-undo").hide();
+        tbl_row.find(".fa-edit").show();
+        //make div uneditable 
+     $(this).closest('div').attr('contenteditable', 'false');
+     //Remove Class and CSS
+     tbl_row.find('#trainRow').removeClass('bg-dark').css('padding','')
+    
+  
 });
 
-
+// firebase.auth().signOut().then(function() {
+//     // Sign-out successful.
+//   }).catch(function(error) {
+//     // An error happened.
+//   });
    
+
+//Convert time to military time formate 
+function convertTime12to24(time12h) {
+    const [time, modifier] = time12h.split(' ');
+  
+    let [hours, minutes] = time.split(':');
+  
+    if (hours === '12') {
+      hours = '00';
+    }
+  
+    if (modifier === 'PM') {
+      hours = parseInt(hours, 10) + 12;
+    }
+  
+    return hours + ':' + minutes;
+  }
