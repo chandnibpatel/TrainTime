@@ -1,0 +1,14 @@
+body{
+    background-image: url("../images/background.png");
+    background-repeat: no-repeat;
+    background-position: center;   
+    background-size: cover;  
+    text-align: center;
+}
+.container{
+    opacity: 0.7;
+    color:white;
+}
+.trainInfo, .addTrain,.jumbotron{
+    background-color: black;
+}
