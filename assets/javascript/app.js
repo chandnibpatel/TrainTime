@@ -132,7 +132,7 @@ var config = {
    if (signIn==null) return;
 
    //displayig the user name after sign in
-   $("#loginUser").text(signIn.displayName);
+   $("#loginUser").text("welcome " + signIn.displayName);
 
     //refrence to the firebase data when database changes
     trainInfo.ref().on("value", function(snapshot) {
