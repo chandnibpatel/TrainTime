@@ -29,7 +29,7 @@ var config = {
   // Authentication with google login
   //**************************************************************************** 
   function login(){
-      console.log("IN Login");
+        console.log("IN Login");
             var provider = new firebase.auth.GoogleAuthProvider();
             provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
             //  firebase.auth().signInWithRedirect(provider);
@@ -132,7 +132,7 @@ var config = {
    if (signIn==null) return;
 
    //displayig the user name after sign in
-   $("#loginUser").append(signIn.displayName);
+   $("#loginUser").text(signIn.displayName);
 
     //refrence to the firebase data when database changes
     trainInfo.ref().on("value", function(snapshot) {
