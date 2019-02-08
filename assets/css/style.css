@@ -12,3 +12,8 @@ body{
 .trainInfo, .addTrain,.jumbotron{
     background-color: black;
 }
+#loginUser{
+    position: absolute;
+    left:10%;
+    top:0px;
+}

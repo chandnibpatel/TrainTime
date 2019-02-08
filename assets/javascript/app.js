@@ -7,42 +7,11 @@ var config = {
     messagingSenderId: "444504554488"
   };
   firebase.initializeApp(config);
- var signIn ="";
- 
-  function login(){
-      console.log("IN Login");
-            var provider = new firebase.auth.GoogleAuthProvider();
-            provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-            //  firebase.auth().signInWithRedirect(provider);
-            firebase.auth().signInWithPopup(provider).then(function(result) {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            var token = result.credential.accessToken;
-            console.log(result);
-            // The signed-in user info.
-            var user = result.user;
-            localStorage.setItem('userDetail', JSON.stringify(user))
-           updateTrainInfo();
-            // ...
-            }).catch(function(error) {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // The email of the user's account used.
-            var email = error.email;
-            // The firebase.auth.AuthCredential type that was used.
-            var credential = error.credential;
-            // ...
-            });
 
-
-  }
-//   //For Authenication using google account
-
-//   var provider = new firebase.auth.GoogleAuthProvider();
-//   //Redirect User to Google signin page If not already sign in
-//   firebase.auth().signInWithRedirect(provider);
-
-
+  //****************************************************************************
+  // Variable declarations
+  //****************************************************************************
+  var signIn ="";
 
   // Reference to a firebase database
   var trainInfo = firebase.database();
@@ -56,8 +25,42 @@ var config = {
   var elTimeFreq = $("#frequencyInput");
 
   
+  //****************************************************************************
+  // Authentication with google login
+  //**************************************************************************** 
+  function login(){
+      console.log("IN Login");
+            var provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+            //  firebase.auth().signInWithRedirect(provider);
+            firebase.auth().signInWithPopup(provider).then(function(result) {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            var token = result.credential.accessToken;
+            console.log(result);
+            // The signed-in user info.
+            var user = result.user;
 
+            // add a user to local storage on successful login
+            localStorage.setItem('userDetail', JSON.stringify(user))
+            updateTrainInfo();
+            
+            }).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
+            });
+  }
+
+  
+  //****************************************************************************
   //calls StoreInDatabase to add train details if submit button is being clicked
+  //****************************************************************************
+
   $("#submitBtn").on("click", function(){
   
     // form validation - if empty - alert
@@ -69,7 +72,9 @@ var config = {
     }
   });
 
+  //****************************************************************************
   // Calls storeInputs function if enter key is clicked
+  //****************************************************************************
     $('form').on("keypress", function(event) {
         if (event.which === 13) {
             // form validation - if empty - alert
@@ -82,6 +87,10 @@ var config = {
         }
     });
 
+
+  //****************************************************************************
+  // StoreInDatabase to add train details to the firebase database
+  //****************************************************************************
 
   function storeInDatabase(event){
     event.preventDefault();
@@ -110,14 +119,21 @@ var config = {
 
   }
 
+  //****************************************************************************
   //Update TrainInfo function will update the HTML with the train details
+  //****************************************************************************
+
   function updateTrainInfo(){
-// return back if user is not signin
-    console.log("In UpdateTrainInfo");
+
+    // Get the user login detail from the local storage
     signIn =JSON.parse(localStorage.getItem('userDetail'));
+
+    // return back if user is not signin
    if (signIn==null) return;
 
-  $("#loginUser").append(signIn.displayName);
+   //displayig the user name after sign in
+   $("#loginUser").append(signIn.displayName);
+
     //refrence to the firebase data when database changes
     trainInfo.ref().on("value", function(snapshot) {
 
@@ -148,43 +164,32 @@ var config = {
               
                 );
                 $(".fa-save").hide();
-                $(".fa-undo").hide();
-
-                //$("span").hide();
-
-
-
-
-
-                // Hover view of delete or edit button
-                // $("tr").hover(
-                //     function() {
-                //         $(this).find("span").show();
-                //     },
-                //     function() {
-                //         $(this).find("span").hide();
-                //     }
-                // );
-            
-              
+                $(".fa-undo").hide();             
                 
             });
     });
 }
 
 
-
+//****************************************************************************
 //function to start timer
+//****************************************************************************
 function startTimer() {
     timer = setInterval(function() {  
         updateTrainInfo();
     }, 60000);
 }
 
+//****************************************************************************
 //function to stop timer
+//****************************************************************************
 function stopTimer() {
     clearInterval(timer);
 }
+
+//****************************************************************************
+// Main Process
+//****************************************************************************
 $( document ).ready(function() {
     signIn=JSON.parse(localStorage.getItem('userDetail'));
     console.log(signIn);
@@ -195,7 +200,10 @@ $( document ).ready(function() {
     startTimer();
 
 });
+
+//****************************************************************************
 // BONUS to Remove Train
+//****************************************************************************
 $("#trainRow").on("click", ".fa-trash", function() {
     var confirmDelete = confirm("Deleting a train permanently removes the train from the system. Are you sure you want to delete this train?");
     if(confirmDelete)
@@ -205,7 +213,9 @@ $("#trainRow").on("click", ".fa-trash", function() {
     refTrain.remove();
     }
 });
+//****************************************************************************
 // BONUS to Edit Train Details
+//****************************************************************************
 $("#trainRow").on("click", ".fa-edit", function() {
     console.log(this);
     var tbl_row =$(this).closest('tr');
@@ -224,7 +234,9 @@ $("#trainRow").on("click", ".fa-edit", function() {
     
     $(tbl_row).focus();
 });
-//To Save Row records
+//****************************************************************************
+// Save edited Row records on save icon click
+//****************************************************************************
 $("#trainRow").on("click", ".fa-save", function() {
   
     var tbl_row =$(this).closest('tr');
@@ -249,29 +261,26 @@ $("#trainRow").on("click", ".fa-save", function() {
         firstTrain:  moment(convertTime12to24(arr[3]),"HH:mm").subtract(1,"years").format("X"),
         frequency: arr[2]
         }
-console.log(trainId);
-      trainInfo.ref(trainId).set(newTrain);
+      
+       trainInfo.ref(trainId).set(newTrain);
 
-        console.log(newTrain);
+        
         updateTrainInfo();
         tbl_row.find(".fa-save").hide();
         tbl_row.find(".fa-undo").hide();
         tbl_row.find(".fa-edit").show();
+
         //make div uneditable 
-     $(this).closest('div').attr('contenteditable', 'false');
-     //Remove Class and CSS
-     tbl_row.find('#trainRow').removeClass('bg-dark').css('padding','')
+        $(this).closest('div').attr('contenteditable', 'false');
+
+        //Remove Class and CSS
+        tbl_row.find('#trainRow').removeClass('bg-dark').css('padding','')
     
-  
 });
 
-// firebase.auth().signOut().then(function() {
-//     // Sign-out successful.
-//   }).catch(function(error) {
-//     // An error happened.
-//   });
-   
-//To Save Row records
+//****************************************************************************
+//To Undo the edited Row records
+//****************************************************************************
 $("#trainRow").on("click", ".fa-undo", function() {
   
     var tbl_row =$(this).closest('tr');
@@ -288,8 +297,9 @@ $("#trainRow").on("click", ".fa-undo", function() {
   
 });
 
-
+//****************************************************************************
 //Convert time to military time formate 
+//****************************************************************************
 function convertTime12to24(time12h) {
     const [time, modifier] = time12h.split(' ');
   
