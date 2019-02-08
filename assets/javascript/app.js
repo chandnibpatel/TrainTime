@@ -7,12 +7,41 @@ var config = {
     messagingSenderId: "444504554488"
   };
   firebase.initializeApp(config);
+ var signIn =JSON.parse(localStorage.getItem('userDetail'));
 
-  //For Authenication using google account
+  function login(){
+      console.log("IN Login");
+            var provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+            //  firebase.auth().signInWithRedirect(provider);
+            firebase.auth().signInWithPopup(provider).then(function(result) {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            var token = result.credential.accessToken;
+            console.log(result);
+            // The signed-in user info.
+            var user = result.user;
+            localStorage.setItem('userDetail', JSON.stringify(user))
+            
+            // ...
+            }).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
+            });
 
-  var provider = new firebase.auth.GoogleAuthProvider();
-  //Redirect User to Google signin page If not already sign in
-  firebase.auth().signInWithRedirect(provider);
+
+  }
+//   //For Authenication using google account
+
+//   var provider = new firebase.auth.GoogleAuthProvider();
+//   //Redirect User to Google signin page If not already sign in
+//   firebase.auth().signInWithRedirect(provider);
+
 
 
   // Reference to a firebase database
@@ -25,29 +54,6 @@ var config = {
   // form validation for Time using jQuery Mask plugin
   var elTrainTime = $("#firstTrainInput");
   var elTimeFreq = $("#frequencyInput");
-
-  
-  /// Get Authicated user token
-  firebase.auth().getRedirectResult().then(function(result) {
-      
-    if (result.credential) {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      var token = result.credential.accessToken;
-      // ...
-    }
-    // The signed-in user info.
-    var user1 = result.user;
-    console.log(user1);
-  }).catch(function(error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    // The email of the user's account used.
-    var email = error.email;
-    // The firebase.auth.AuthCredential type that was used.
-    var credential = error.credential;
-    // ...
-  });
 
   
 
@@ -175,7 +181,8 @@ function stopTimer() {
     clearInterval(timer);
 }
 $( document ).ready(function() {
-    
+    console.log(signIn);
+    if(signIn===null){login()}    
     updateTrainInfo();
     startTimer();
 
