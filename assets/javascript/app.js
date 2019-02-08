@@ -8,7 +8,7 @@ var config = {
   };
   firebase.initializeApp(config);
  var signIn ="";
- var refreshData=1000;
+ 
   function login(){
       console.log("IN Login");
             var provider = new firebase.auth.GoogleAuthProvider();
@@ -115,9 +115,9 @@ var config = {
 // return back if user is not signin
     console.log("In UpdateTrainInfo");
     signIn =JSON.parse(localStorage.getItem('userDetail'));
-   if (signIn===null) return;
+   if (signIn==null) return;
 
-   refreshData=60000;
+  
     //refrence to the firebase data when database changes
     trainInfo.ref().on("value", function(snapshot) {
 
@@ -178,7 +178,7 @@ var config = {
 function startTimer() {
     timer = setInterval(function() {  
         updateTrainInfo();
-    }, refreshData);
+    }, 60000);
 }
 
 //function to stop timer
