@@ -7,7 +7,7 @@ var config = {
     messagingSenderId: "444504554488"
   };
   firebase.initializeApp(config);
- var signIn =JSON.parse(localStorage.getItem('userDetail'));
+ var signIn ="";
  var refreshData=1000;
   function login(){
       console.log("IN Login");
@@ -21,7 +21,7 @@ var config = {
             // The signed-in user info.
             var user = result.user;
             localStorage.setItem('userDetail', JSON.stringify(user))
-           
+           updateTrainInfo();
             // ...
             }).catch(function(error) {
             // Handle Errors here.
@@ -113,8 +113,8 @@ var config = {
   //Update TrainInfo function will update the HTML with the train details
   function updateTrainInfo(){
 // return back if user is not signin
-console.log("In UpdateTrainInfo");
-signIn =JSON.parse(localStorage.getItem('userDetail'))
+    console.log("In UpdateTrainInfo");
+    signIn =JSON.parse(localStorage.getItem('userDetail'));
    if (signIn===null) return;
 
    refreshData=60000;
@@ -186,6 +186,7 @@ function stopTimer() {
     clearInterval(timer);
 }
 $( document ).ready(function() {
+    signIn=JSON.parse(localStorage.getItem('userDetail'));
     console.log(signIn);
     if(signIn===null){login();}
 
