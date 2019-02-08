@@ -117,7 +117,7 @@ var config = {
     signIn =JSON.parse(localStorage.getItem('userDetail'));
    if (signIn==null) return;
 
-  
+  $("#loginUser").append(signIn.displayName);
     //refrence to the firebase data when database changes
     trainInfo.ref().on("value", function(snapshot) {
 
