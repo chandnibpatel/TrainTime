@@ -113,6 +113,7 @@ var config = {
   //Update TrainInfo function will update the HTML with the train details
   function updateTrainInfo(){
 // return back if user is not signin
+console.log("In UpdateTrainInfo");
    if (signIn==null) return;
 
    refreshData=60000;
