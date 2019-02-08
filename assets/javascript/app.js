@@ -8,7 +8,7 @@ var config = {
   };
   firebase.initializeApp(config);
  var signIn =JSON.parse(localStorage.getItem('userDetail'));
-
+ var refreshData=1000;
   function login(){
       console.log("IN Login");
             var provider = new firebase.auth.GoogleAuthProvider();
@@ -21,8 +21,7 @@ var config = {
             // The signed-in user info.
             var user = result.user;
             localStorage.setItem('userDetail', JSON.stringify(user))
-            updateTrainInfo();
-            startTimer();
+           
             // ...
             }).catch(function(error) {
             // Handle Errors here.
@@ -113,7 +112,10 @@ var config = {
 
   //Update TrainInfo function will update the HTML with the train details
   function updateTrainInfo(){
+// return back if user is not signin
+   if (signIn==null) return;
 
+   refreshData=60000;
     //refrence to the firebase data when database changes
     trainInfo.ref().on("value", function(snapshot) {
 
@@ -174,7 +176,7 @@ var config = {
 function startTimer() {
     timer = setInterval(function() {  
         updateTrainInfo();
-    }, 60000);
+    }, refreshData);
 }
 
 //function to stop timer
@@ -185,10 +187,10 @@ $( document ).ready(function() {
     console.log(signIn);
     if(signIn===null){login();}
 
-    if (signIn!=null){
+   
     updateTrainInfo();
     startTimer();
-}
+
 });
 // BONUS to Remove Train
 $("#trainRow").on("click", ".fa-trash", function() {
