@@ -114,7 +114,8 @@ var config = {
   function updateTrainInfo(){
 // return back if user is not signin
 console.log("In UpdateTrainInfo");
-   if (signIn==null) return;
+signIn =JSON.parse(localStorage.getItem('userDetail'))
+   if (signIn===null) return;
 
    refreshData=60000;
     //refrence to the firebase data when database changes
