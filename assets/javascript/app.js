@@ -21,7 +21,8 @@ var config = {
             // The signed-in user info.
             var user = result.user;
             localStorage.setItem('userDetail', JSON.stringify(user))
-            
+            updateTrainInfo();
+            startTimer();
             // ...
             }).catch(function(error) {
             // Handle Errors here.
@@ -183,7 +184,7 @@ function stopTimer() {
 $( document ).ready(function() {
     console.log(signIn);
     if(signIn===null){login();}
-    
+
     if (signIn!=null){
     updateTrainInfo();
     startTimer();
