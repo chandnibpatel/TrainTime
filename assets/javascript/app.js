@@ -238,6 +238,7 @@ console.log(trainId);
       trainInfo.ref(trainId).set(newTrain);
 
         console.log(newTrain);
+        updateTrainInfo();
         tbl_row.find(".fa-save").hide();
         tbl_row.find(".fa-undo").hide();
         tbl_row.find(".fa-edit").show();
@@ -255,6 +256,23 @@ console.log(trainId);
 //     // An error happened.
 //   });
    
+//To Save Row records
+$("#trainRow").on("click", ".fa-undo", function() {
+  
+    var tbl_row =$(this).closest('tr');
+
+        tbl_row.find(".fa-save").hide();
+        tbl_row.find(".fa-undo").hide();
+        tbl_row.find(".fa-edit").show();
+
+        //make div uneditable 
+     $(this).closest('div').attr('contenteditable', 'false');
+     //Remove Class and CSS
+     tbl_row.find('#trainRow').removeClass('bg-dark').css('padding','')
+     updateTrainInfo();
+  
+});
+
 
 //Convert time to military time formate 
 function convertTime12to24(time12h) {
