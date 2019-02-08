@@ -182,10 +182,12 @@ function stopTimer() {
 }
 $( document ).ready(function() {
     console.log(signIn);
-    if(signIn===null){login()}    
+    if(signIn===null){login();}
+    
+    if (signIn!=null){
     updateTrainInfo();
     startTimer();
-
+}
 });
 // BONUS to Remove Train
 $("#trainRow").on("click", ".fa-trash", function() {
